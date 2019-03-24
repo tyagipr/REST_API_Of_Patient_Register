@@ -22,4 +22,4 @@ Create a Patient API using Swagger2.0, SQLite, ExpressJs and Sequelize
 
 - Start **express server** with (``` swagger project start```) and navigate to the  http://localhost:10010/ and you will get the swagger UI like this:-
 
-![](images/)
+![](images/Screenshot.png)
