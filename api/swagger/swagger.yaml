@@ -1,0 +1,201 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: Patient Registration
+  description: A Simple CRUD Operations On Pateint Registration
+# during dev, should point to your local machine
+host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /Patient:
+    x-swagger-router-controller: documents
+    post:
+      description: Add a new patient
+      operationId: create
+      parameters:
+        - name: newPatient
+          description: Attributes of new patient
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Document"
+      responses:
+        "201":
+          description: Successfully created
+          schema:
+            $ref: "#/definitions/Document"
+        default:
+          $ref: "#/responses/ErrorResponse"
+    get:
+      description: Get all available Pateint Info
+      operationId: readAll
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Document"
+        default:
+          $ref: "#/responses/ErrorResponse"
+  /documents/{id}:
+    x-swagger-router-controller: documents
+    get:
+      description: Get a Pateint Info by its ID
+      operationId: readById
+      parameters:
+        - name: id
+          description: Patient id
+          type: number
+          in: path
+          required: true
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Document"
+        default:
+          $ref: "#/responses/ErrorResponse"
+    delete:
+      description: Delete a Pateint Info by its ID
+      operationId: deleteById
+      parameters:
+        - name: id
+          description: Document id
+          type: number
+          in: path
+          required: true
+      responses:
+        "200":
+          $ref: "#/responses/Response"
+        default:
+          $ref: "#/responses/ErrorResponse"
+    put:
+      description: Update an existing Patient Info by its ID or create a new one with the provided ID
+      operationId: updateOrCreate
+      parameters:
+        - name: id
+          description: Patient id
+          type: number
+          in: path
+          required: true
+        - name: Document
+          description: New properties of existing Patient Info or properties of new Patient
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Document"
+      responses:
+        "200":
+          description: Successfully updated
+          schema:
+            $ref: "#/definitions/Document"
+        "201":
+          description: Successfully created
+          schema:
+            $ref: "#/definitions/Document"
+        default:
+          $ref: "#/responses/ErrorResponse"
+    patch:
+      description: Update some attributes of a Patient identified by its ID
+      operationId: updateById
+      parameters:
+        - name: id
+          description: Patient id
+          type: number
+          in: path
+          required: true
+        - name: Patient 
+          description: Only those attributes of existing document, that should change.
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/DocumentOptional"
+      responses:
+        "200":
+          description: Successfully updated
+          schema:
+            $ref: "#/definitions/Document"
+        default:
+          $ref: "#/responses/ErrorResponse"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+# complex objects have schema definitions
+definitions:
+  # Model definition for a Document
+  Document:
+    properties:
+      # The Sequelize-ORM will add id, createdAt and updatedAt
+      name:
+        type: string
+        description: Name of the Patient
+      address:
+        type: string
+        description: Address of the Patient
+      email:
+        type: string
+        description: email of the patient
+      phone:
+        type: integer
+        description: phone number of the patient
+      password:
+        type: string
+        description: password of the patient
+    required:
+      - name
+      - address
+      - email
+      - phone
+      - password
+  # Model definition for a Document with optional attributes (e.g. to patch some attributes)
+  DocumentOptional:
+    properties:
+      name:
+        type: string
+        description: Name of the Patient
+      address:
+        type: string
+        description: Address of the Patient
+      email:
+        type: string
+        description: email of the patient
+      phone:
+        type: integer
+        description: phone number of the patient
+      password:
+        type: string
+        description: password of the patient
+# response definitions:
+responses:
+  Response:
+    description: Success
+    schema:
+      type: object
+      properties:
+        success:
+          type: number
+        description:
+          type: string
+      required:
+        - success
+        - description
+  ErrorResponse:
+    description: Error
+    schema:
+      required:
+        - message
+      properties:
+        message:
+          type: string
